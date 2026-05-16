@@ -1,0 +1,27 @@
+# Excel data files
+*.xlsx
+
+# Power BI binary
+*.pbix
+
+# Backups
+Backup/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Internal state
+.hpi_state/
+
+# Claude Code internals
+.agents/
+.claude/
+
+# Scratch files
+test_write.txt
+
+# Env files — never commit real keys
+.env
+.env.local

@@ -1,0 +1,94 @@
+==========================================================
+INSTITUTIONAL COLOR PALETTE FOR DASHBOARDS
+Real Estate & Property Management Company
+==========================================================
+
+Palette Rationale:
+- Blue/Navy  -> trust, stability, financial credibility
+- Green      -> growth, land, sustainability, prosperity
+- Terracotta -> warmth, home, residential character
+- Slate Gray -> neutrality, professionalism, UI base
+- Gold       -> premium value, highlights, equity
+
+Each base color includes a SHADOW (darker) and LIGHT (lighter)
+variant, suitable for hovers, backgrounds, borders, charts,
+KPI cards, and data visualization layers.
+
+----------------------------------------------------------
+1. PRIMARY  - INSTITUTIONAL NAVY  (Trust / Brand)
+----------------------------------------------------------
+Shadow  : #0E2138
+Base    : #1B3A5C
+Light   : #4A6B8C
+
+Use for : Main brand bar, primary KPI cards, headers,
+          primary chart series, links.
+
+----------------------------------------------------------
+2. SECONDARY - PROPERTY GREEN  (Growth / Land)
+----------------------------------------------------------
+Shadow  : #1A4733
+Base    : #2D6A4F
+Light   : #5C9A7E
+
+Use for : Positive metrics, gains, growth indicators,
+          map polygons for land/properties.
+
+----------------------------------------------------------
+3. ACCENT - TERRACOTTA WARMTH  (Residential / Homes)
+----------------------------------------------------------
+Shadow  : #8A3318
+Base    : #C44E2C
+Light   : #E58367
+
+Use for : Residential-segment highlights, alerts on
+          rental data, secondary chart series, hover
+          states on residential filters.
+
+----------------------------------------------------------
+4. NEUTRAL - SLATE GRAY  (UI Base / Structure)
+----------------------------------------------------------
+Shadow  : #2C3744
+Base    : #475569
+Light   : #94A3B8
+
+Use for : Body text, table borders, axes, gridlines,
+          card backgrounds, secondary labels.
+
+----------------------------------------------------------
+5. HIGHLIGHT - PREMIUM GOLD  (Value / Equity)
+----------------------------------------------------------
+Shadow  : #9B7510
+Base    : #D4A017
+Light   : #EBC75A
+
+Use for : Premium listings, high-value KPIs, callouts,
+          star/featured property markers, equity charts.
+
+==========================================================
+RECOMMENDED SUPPORTING NEUTRALS (Backgrounds & Text)
+==========================================================
+Page Background  : #F7F9FC
+Card Background  : #FFFFFF
+Subtle Divider   : #E2E8F0
+Primary Text     : #0F172A
+Muted Text       : #64748B
+
+==========================================================
+SEMANTIC / STATUS COLORS (Optional, for KPI badges)
+==========================================================
+Success : #16A34A
+Warning : #F59E0B
+Danger  : #DC2626
+Info    : #0284C7
+
+==========================================================
+USAGE TIPS
+==========================================================
+- Use Navy as the dominant brand color (60% of UI).
+- Pair Green or Terracotta as a supporting accent (30%).
+- Reserve Gold for the most important highlights (10%).
+- Use Slate variants for structural / chrome elements.
+- Always test color combinations for WCAG 2.1 AA contrast
+  (>= 4.5:1 for body text, >= 3:1 for large text and UI).
+==========================================================
