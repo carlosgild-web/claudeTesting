@@ -1,11 +1,13 @@
 import os
 import pandas as pd
-from openai import OpenAI
+import google.generativeai as genai
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_PATH = os.path.join(BASE_DIR, 'HPIAdmins_v1.xlsx')
 
-client = OpenAI()
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+
+_model = None
 
 _df = None
 _system_prompt = None
@@ -143,22 +145,30 @@ def get_system_prompt() -> str:
     return _system_prompt
 
 
+def _get_model():
+    global _model
+    if _model is None:
+        _model = genai.GenerativeModel(
+            model_name="gemini-2.0-flash",
+            system_instruction=get_system_prompt(),
+        )
+    return _model
+
+
 def ask(question: str, history: list | None = None) -> str:
     """
     Ask the QA agent a question.
     history: list of {"role": "user"|"assistant", "content": str}
     Returns the assistant reply as a string.
     """
-    messages = [{"role": "system", "content": get_system_prompt()}]
-    messages += list(history or [])[-20:]
-    messages.append({"role": "user", "content": question})
-
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        max_tokens=1024,
-        messages=messages,
-    )
-    return response.choices[0].message.content
+    hist = list(history or [])[-20:]
+    gemini_history = [
+        {"role": "model" if m["role"] == "assistant" else "user", "parts": [m["content"]]}
+        for m in hist
+    ]
+    chat = _get_model().start_chat(history=gemini_history)
+    response = chat.send_message(question)
+    return response.text
 
 
 if __name__ == "__main__":

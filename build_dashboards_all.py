@@ -83,6 +83,14 @@ for r in regions:
     row = latest[latest['RegionName']==r]
     prop_data_by_region[r] = [round(float(row[p].values[0]),0) for p in prop_cols] if len(row) > 0 else [0]*4
 
+# Time series per property type per region (for Mgr trend filter)
+prop_series_by_region = {}
+for pc, pl in zip(prop_cols, prop_labels):
+    prop_series_by_region[pl] = {}
+    for r in regions:
+        rdf = df_valid[df_valid['RegionName'] == r].sort_values('Date')
+        prop_series_by_region[pl][r] = [round(float(v),0) if pd.notna(v) else None for v in rdf[pc]]
+
 # Market avg price by property type over years
 prop_yearly = {}
 for pc, pl in zip(prop_cols, prop_labels):
@@ -140,6 +148,7 @@ const PROP_LABELS={json.dumps(prop_labels)};
 const PROP_COLORS={json.dumps(prop_colors)};
 const PROP_DATA={json.dumps(prop_data_by_region)};
 const PROP_YEARLY={json.dumps(prop_yearly)};
+const PROP_SERIES={json.dumps(prop_series_by_region)};
 const REGION_GROWTH={json.dumps(region_growth)};
 const REGION_GROWTH_SORTED={json.dumps(region_growth_sorted)};
 const LATEST_BY_REGION={json.dumps(latest_by_region)};
@@ -799,7 +808,7 @@ footer{text-align:center;padding:14px 32px;font-size:.65rem;color:var(--muted);b
   <input type="range" id="mgrTo" min="1995" max="2016" value="2016"/>
   <span class="year-val" id="mgrToV">2016</span>
   <span class="fb-label">Property Type</span>
-  <select id="mgrProp"><option value="0">All Types</option><option value="0">Detached</option><option value="1">Semi-Detached</option><option value="2">Terraced</option><option value="3">Flat</option></select>
+  <select id="mgrProp"><option value="ALL">All Types</option><option value="0">Detached</option><option value="1">Semi-Detached</option><option value="2">Terraced</option><option value="3">Flat</option></select>
 </div>
 <main>
 
@@ -920,6 +929,8 @@ const mgrFromV=document.getElementById('mgrFromV'), mgrToV=document.getElementBy
 mgrFromEl.addEventListener('input',()=>{mgrFromV.textContent=mgrFromEl.value;updateMgr();});
 mgrToEl.addEventListener('input',()=>{mgrToV.textContent=mgrToEl.value;updateMgr();});
 mgrRegEl.addEventListener('change',updateMgr);
+const mgrPropEl=document.getElementById('mgrProp');
+mgrPropEl.addEventListener('change',updateMgr);
 
 const optM={responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
   plugins:{legend:{display:false},tooltip:{backgroundColor:'#1B3A5C',titleColor:'#F7F9FC',bodyColor:'#94A3B8',borderColor:'rgba(74,107,140,0.5)',borderWidth:1}},
@@ -936,6 +947,7 @@ function getIdxs(){
   return DATES.map((d,i)=>[parseInt(d.slice(0,4)),i]).filter(([y])=>y>=y0&&y<=y1).map(([,i])=>i);
 }
 function getRegs(){const s=mgrRegEl.value;return s==='ALL'?REGIONS:[s];}
+function getPriceSrc(){const v=mgrPropEl.value;return v==='ALL'?PRICE_BY_REGION:PROP_SERIES[PROP_LABELS[parseInt(v)]];}
 
 initMgrChart('mgrTrend','line',{...optM,scales:{...optM.scales,y:{...optM.scales.y,ticks:{callback:v=>'£'+(v/1000).toFixed(0)+'k',font:{size:10}}}}});
 initMgrChart('mgrVol','line',{...optM,scales:{...optM.scales,y:{...optM.scales.y,ticks:{callback:v=>fmtN(v),font:{size:10}}}}});
@@ -955,7 +967,7 @@ function updateMgr(){
   ['mgrTrend','mgrVol','mgrYoY','mgrMoM'].forEach(id=>{
     const ch=mgrCharts[id];
     ch.data.labels=labels;
-    const src={mgrTrend:PRICE_BY_REGION,mgrVol:VOL_BY_REGION,mgrYoY:YOY_BY_REGION,mgrMoM:MOM_BY_REGION}[id];
+    const src={mgrTrend:getPriceSrc(),mgrVol:VOL_BY_REGION,mgrYoY:YOY_BY_REGION,mgrMoM:MOM_BY_REGION}[id];
     ch.data.datasets=regs.map(r=>({label:r,data:idxs.map(i=>src[r][i]),borderColor:COLORS[r],borderWidth:1.5,pointRadius:0,tension:0.3,fill:false}));
     ch.update();
   });

@@ -8,17 +8,17 @@ Write-Host ""
 Write-Host "  HPI QA Agent  -  localhost:5050" -ForegroundColor Cyan
 Write-Host ""
 
-# Check OPENAI_API_KEY
-if (-not $env:OPENAI_API_KEY) {
-    Write-Host "  ERROR: OPENAI_API_KEY is not set." -ForegroundColor Red
-    Write-Host '  Run: $env:OPENAI_API_KEY = "sk-..."' -ForegroundColor Yellow
+# Check GEMINI_API_KEY
+if (-not $env:GEMINI_API_KEY) {
+    Write-Host "  ERROR: GEMINI_API_KEY is not set." -ForegroundColor Red
+    Write-Host '  Run: $env:GEMINI_API_KEY = "AIza..."' -ForegroundColor Yellow
     Write-Host ""
     exit 1
 }
 
 # Install dependencies if needed
 $missing = $false
-foreach ($pkg in @("flask", "flask_cors", "openai", "pandas", "openpyxl")) {
+foreach ($pkg in @("flask", "flask_cors", "google.generativeai", "pandas", "openpyxl")) {
     python -c "import $pkg" 2>$null
     if ($LASTEXITCODE -ne 0) { $missing = $true; break }
 }
