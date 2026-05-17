@@ -3,9 +3,11 @@ Generates:
   {YYYYMMDD}/Presentation/HPI_Dashboard_Presentation.pptx
   {YYYYMMDD}/Presentation/HPI_Dashboard_UserGuide.pdf
 """
-import os, textwrap, datetime
+import os, sys, textwrap, datetime
 import pandas as pd
 import numpy as np
+
+generate_pdf = '--pdf' in sys.argv
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 date_str = os.environ.get('HPI_OUTPUT_DATE', datetime.date.today().strftime('%Y%m%d'))
@@ -510,6 +512,10 @@ prs.save(ppt_path)
 size_kb = os.path.getsize(ppt_path)/1024
 print(f"PPT saved: {ppt_path} ({size_kb:.0f} KB)")
 
+if not generate_pdf:
+    print("PDF skipped. Pass --pdf to also generate HPI_Dashboard_UserGuide.pdf")
+    print("Done.")
+    sys.exit(0)
 
 # ═════════════════════════════════════════════════════════════════════════════
 # PDF USER GUIDE

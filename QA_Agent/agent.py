@@ -1,13 +1,11 @@
 import os
+import anthropic
 import pandas as pd
-import google.generativeai as genai
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_PATH = os.path.join(BASE_DIR, 'HPIAdmins_v1.xlsx')
 
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-
-_model = None
+_client = None
 
 _df = None
 _system_prompt = None
@@ -145,14 +143,11 @@ def get_system_prompt() -> str:
     return _system_prompt
 
 
-def _get_model():
-    global _model
-    if _model is None:
-        _model = genai.GenerativeModel(
-            model_name="gemini-2.0-flash",
-            system_instruction=get_system_prompt(),
-        )
-    return _model
+def _get_client():
+    global _client
+    if _client is None:
+        _client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+    return _client
 
 
 def ask(question: str, history: list | None = None) -> str:
@@ -162,13 +157,19 @@ def ask(question: str, history: list | None = None) -> str:
     Returns the assistant reply as a string.
     """
     hist = list(history or [])[-20:]
-    gemini_history = [
-        {"role": "model" if m["role"] == "assistant" else "user", "parts": [m["content"]]}
+    messages = [
+        {"role": m["role"], "content": m["content"]}
         for m in hist
     ]
-    chat = _get_model().start_chat(history=gemini_history)
-    response = chat.send_message(question)
-    return response.text
+    messages.append({"role": "user", "content": question})
+
+    response = _get_client().messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=1024,
+        system=get_system_prompt(),
+        messages=messages,
+    )
+    return response.content[0].text
 
 
 if __name__ == "__main__":
